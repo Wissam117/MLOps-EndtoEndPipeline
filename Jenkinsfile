@@ -2,10 +2,10 @@ pipeline {
     agent any
     
     environment {
-        DOCKER_HUB_CREDS = credentials('docker-hub-credentials')
-        IMAGE_NAME = 'yourdockerhubusername/ml-app'
+        DOCKER_HUB_CREDS = credentials('docker-jenkins')
+        IMAGE_NAME = 'saadgillani7/ml-app'
         IMAGE_TAG = "v1.0.${BUILD_NUMBER}"
-        ADMIN_EMAIL = 'admin@example.com'
+        ADMIN_EMAIL = 'saadgillani001@gmail.com'
     }
     
     stages {
