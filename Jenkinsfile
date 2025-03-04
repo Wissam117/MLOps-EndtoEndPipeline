@@ -21,11 +21,11 @@ pipeline {
                 # Activate the virtual environment
                 . venv/bin/activate
 
-                # Upgrade pip, setuptools (to a version that supports Python 3.12), and wheel.
-                pip install --upgrade pip setuptools>=68 wheel
+                # Upgrade pip, setuptools (to version 68 or later), and wheel.
+                pip install --upgrade pip "setuptools>=68" wheel
 
-                # Install required Python packages from requirements.txt
-                pip install -r requirements.txt
+                # Install required packages from requirements.txt using binary wheels only.
+                pip install --only-binary :all: -r requirements.txt
                 '''
             }
         }
