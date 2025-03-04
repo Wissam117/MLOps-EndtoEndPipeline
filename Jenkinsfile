@@ -39,29 +39,23 @@ pipeline {
     
     post {
         success {
-            node {
-                emailext (
-                    subject: "Pipeline Success: ${currentBuild.fullDisplayName}",
-                    body: "The pipeline has been successfully deployed.\nImage: ${IMAGE_NAME}:${IMAGE_TAG}",
-                    to: "${ADMIN_EMAIL}",
-                    from: "jenkins@example.com"
-                )
-            }
+            emailext (
+                subject: "Pipeline Success: ${currentBuild.fullDisplayName}",
+                body: "The pipeline has been successfully deployed.\nImage: ${IMAGE_NAME}:${IMAGE_TAG}",
+                to: "${ADMIN_EMAIL}",
+                from: "jenkins@example.com"
+            )
         }
         failure {
-            node {
-                emailext (
-                    subject: "Pipeline Failed: ${currentBuild.fullDisplayName}",
-                    body: "The pipeline has failed. Please check the logs.",
-                    to: "${ADMIN_EMAIL}",
-                    from: "jenkins@example.com"
-                )
-            }
+            emailext (
+                subject: "Pipeline Failed: ${currentBuild.fullDisplayName}",
+                body: "The pipeline has failed. Please check the logs.",
+                to: "${ADMIN_EMAIL}",
+                from: "jenkins@example.com"
+            )
         }
         always {
-            node {
-                sh 'docker logout'
-            }
+            sh 'docker logout'
         }
     }
 }
