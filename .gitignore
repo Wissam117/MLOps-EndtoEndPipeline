@@ -1,20 +1,11 @@
 # Create or update .gitignore
 cat > .gitignore << 'EOF'
-# Virtual environment
-myenv/
-venv/
-env/
 
 # Python cache
 __pycache__/
 *.py[cod]
 *$py.class
 .pytest_cache/
-
-# Data and models
-data/*.csv
-*.pkl
-metrics.txt
 
 # IDE files
 .vscode/
