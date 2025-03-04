@@ -11,11 +11,11 @@ pipeline {
         stage('Install Python Dependencies') {
             steps {
                 sh '''
-                # Install system dependencies
-                sudo apt-get update
-                sudo apt-get install -y python3-pip python3-pytest
+                # Update package lists and install system dependencies
+                apt-get update
+                apt-get install -y python3-pip python3-pytest
                 
-                # Install required packages
+                # Install required Python packages
                 pip3 install flask pytest
                 '''
             }
@@ -49,17 +49,14 @@ pipeline {
         stage('Deploy Application') {
             steps {
                 sh '''
-                # Create deployment directory
+                # Create deployment directory and copy package
                 DEPLOY_DIR=/var/lib/jenkins/deployed-apps/ml-app-v1.0.${BUILD_NUMBER}
                 mkdir -p $DEPLOY_DIR
-                
-                # Copy deployment package
                 cp ml-app-v1.0.${BUILD_NUMBER}.tar.gz $DEPLOY_DIR/
                 
                 # Extract for verification
                 cd $DEPLOY_DIR
                 tar -xzf ml-app-v1.0.${BUILD_NUMBER}.tar.gz
-                
                 echo "Deployed to $DEPLOY_DIR"
                 '''
             }
@@ -69,7 +66,6 @@ pipeline {
     post {
         success {
             echo "Build successful! ML application deployed to /var/lib/jenkins/deployed-apps/ml-app-v1.0.${BUILD_NUMBER}"
-            
             emailext (
                 subject: "Pipeline Success: ML Application Deployment",
                 body: "ML Application has been successfully deployed. Version: v1.0.${BUILD_NUMBER}",
@@ -78,7 +74,6 @@ pipeline {
         }
         failure {
             echo "Build failed! Please check the logs for details."
-            
             emailext (
                 subject: "Pipeline Failed: ML Application Deployment",
                 body: "ML Application deployment failed. Please check Jenkins logs for details.",
