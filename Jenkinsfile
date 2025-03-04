@@ -8,38 +8,48 @@ pipeline {
             }
         }
         
-        stage('Build Docker Image') {
+        stage('Setup Python Environment') {
             steps {
                 sh '''
-                docker build -t saadgillani7/ml-app:v1.0.${BUILD_NUMBER} .
-                docker tag saadgillani7/ml-app:v1.0.${BUILD_NUMBER} saadgillani7/ml-app:latest
+                python -m venv venv || python3 -m venv venv
+                . venv/bin/activate
+                pip install -r requirements.txt
                 '''
             }
         }
         
-        stage('Run Tests in Container') {
+        stage('Run Tests') {
             steps {
-                sh 'docker run --rm saadgillani7/ml-app:v1.0.${BUILD_NUMBER} python -m pytest tests/'
+                sh '''
+                . venv/bin/activate
+                python -m pytest tests/
+                '''
             }
         }
         
-        stage('Push to Docker Hub') {
+        stage('Build Package') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-jenkins', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    sh '''
-                    echo $PASSWORD | docker login -u $USERNAME --password-stdin
-                    docker push saadgillani7/ml-app:v1.0.${BUILD_NUMBER}
-                    docker push saadgillani7/ml-app:latest
-                    docker logout
-                    '''
-                }
+                sh '''
+                . venv/bin/activate
+                python src/model/train.py
+                tar czf ml-app-v1.0.${BUILD_NUMBER}.tar.gz src/ model.pkl requirements.txt
+                '''
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                sh '''
+                mkdir -p /var/lib/jenkins/deployed-apps/ml-app-v1.0.${BUILD_NUMBER}
+                cp ml-app-v1.0.${BUILD_NUMBER}.tar.gz /var/lib/jenkins/deployed-apps/ml-app-v1.0.${BUILD_NUMBER}/
+                '''
             }
         }
     }
     
     post {
         success {
-            echo "Build successful! Docker image saadgillani7/ml-app:v1.0.${BUILD_NUMBER} has been pushed."
+            echo "Build successful! ML application deployed to /var/lib/jenkins/deployed-apps/ml-app-v1.0.${BUILD_NUMBER}"
         }
         failure {
             echo "Build failed! Please check the logs for details."
