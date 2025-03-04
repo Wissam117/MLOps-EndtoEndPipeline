@@ -11,15 +11,15 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh '''
-                sudo docker build -t saadgillani7/ml-app:v1.0.${BUILD_NUMBER} .
-                sudo docker tag saadgillani7/ml-app:v1.0.${BUILD_NUMBER} saadgillani7/ml-app:latest
+                docker build -t saadgillani7/ml-app:v1.0.${BUILD_NUMBER} .
+                docker tag saadgillani7/ml-app:v1.0.${BUILD_NUMBER} saadgillani7/ml-app:latest
                 '''
             }
         }
         
         stage('Run Tests in Container') {
             steps {
-                sh 'sudo docker run --rm saadgillani7/ml-app:v1.0.${BUILD_NUMBER} python -m pytest tests/'
+                sh 'docker run --rm saadgillani7/ml-app:v1.0.${BUILD_NUMBER} python -m pytest tests/'
             }
         }
         
@@ -27,10 +27,10 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-jenkins', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     sh '''
-                    echo $PASSWORD | sudo docker login -u $USERNAME --password-stdin
-                    sudo docker push saadgillani7/ml-app:v1.0.${BUILD_NUMBER}
-                    sudo docker push saadgillani7/ml-app:latest
-                    sudo docker logout
+                    echo $PASSWORD | docker login -u $USERNAME --password-stdin
+                    docker push saadgillani7/ml-app:v1.0.${BUILD_NUMBER}
+                    docker push saadgillani7/ml-app:latest
+                    docker logout
                     '''
                 }
             }
