@@ -1,9 +1,5 @@
 # Create or update .gitignore
 cat > .gitignore << 'EOF'
-# Virtual environment
-myenv/
-venv/
-env/
 
 # Python cache
 __pycache__/
