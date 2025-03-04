@@ -1,0 +1,17 @@
+# Create or update .gitignore
+cat > .gitignore << 'EOF'
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+EOF
