@@ -11,12 +11,21 @@ pipeline {
         stage('Install Python Dependencies') {
             steps {
                 sh '''
-                # Update package lists and install system dependencies
+                # (Optional) Update package lists and install python3-venv if not installed.
                 sudo apt-get update -y
-                sudo apt-get install -y python3-pip python3-pytest
+                sudo apt-get install -y python3-venv
                 
-                # Install required Python packages using pip3
-                pip3 install flask pytest
+                # Create a virtual environment
+                python3 -m venv venv
+                
+                # Activate the virtual environment
+                . venv/bin/activate
+                
+                # Upgrade pip, setuptools, and wheel inside the virtual environment
+                pip install --upgrade pip setuptools wheel
+                
+                # Install required Python packages from requirements.txt
+                pip install -r requirements.txt
                 '''
             }
         }
@@ -24,7 +33,8 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
-                # Run tests directly
+                # Activate the virtual environment and run tests
+                . venv/bin/activate
                 PYTHONPATH=. python3 -m pytest tests/
                 '''
             }
@@ -33,6 +43,9 @@ pipeline {
         stage('Build Application') {
             steps {
                 sh '''
+                # Activate the virtual environment
+                . venv/bin/activate
+                
                 # Train the model
                 python3 src/model/train.py
                 
