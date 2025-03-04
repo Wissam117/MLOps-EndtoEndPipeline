@@ -45,23 +45,27 @@ pipeline {
     
     post {
         success {
-            script {
-                emailext(
-                    subject: "Pipeline Success: ${currentBuild.fullDisplayName}",
-                    body: "The pipeline has been successfully deployed.\nImage: ${env.IMAGE_NAME}:${env.IMAGE_TAG}",
-                    to: "${env.ADMIN_EMAIL}",
-                    from: "jenkins@example.com"
-                )
+            node {  // Added node block
+                script {
+                    emailext(
+                        subject: "Pipeline Success: ${currentBuild.fullDisplayName}",
+                        body: "The pipeline has been successfully deployed.\nImage: ${env.IMAGE_NAME}:${env.IMAGE_TAG}",
+                        to: "${env.ADMIN_EMAIL}",
+                        from: "jenkins@example.com"
+                    )
+                }
             }
         }
         failure {
-            script {
-                emailext(
-                    subject: "Pipeline Failed: ${currentBuild.fullDisplayName}",
-                    body: "The pipeline has failed. Please check the logs.",
-                    to: "${env.ADMIN_EMAIL}",
-                    from: "jenkins@example.com"
-                )
+            node {  // Added node block
+                script {
+                    emailext(
+                        subject: "Pipeline Failed: ${currentBuild.fullDisplayName}",
+                        body: "The pipeline has failed. Please check the logs.",
+                        to: "${env.ADMIN_EMAIL}",
+                        from: "jenkins@example.com"
+                    )
+                }
             }
         }
     }
