@@ -1,13 +1,6 @@
 pipeline {
     agent any
     
-    environment {
-        DOCKER_HUB_CREDS = credentials('docker-jenkins')
-        IMAGE_NAME = 'saadgillani7/ml-app'
-        IMAGE_TAG = "v1.0.${BUILD_NUMBER}"
-        ADMIN_EMAIL = 'saadgillani001@gmail.com'
-    }
-    
     stages {
         stage('Checkout') {
             steps {
@@ -17,56 +10,39 @@ pipeline {
         
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
-                sh 'docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest'
+                sh '''
+                docker build -t saadgillani7/ml-app:v1.0.${BUILD_NUMBER} .
+                docker tag saadgillani7/ml-app:v1.0.${BUILD_NUMBER} saadgillani7/ml-app:latest
+                '''
             }
         }
         
         stage('Run Tests in Container') {
             steps {
-                sh 'docker run --rm ${IMAGE_NAME}:${IMAGE_TAG} python -m pytest tests/'
+                sh 'docker run --rm saadgillani7/ml-app:v1.0.${BUILD_NUMBER} python -m pytest tests/'
             }
         }
         
         stage('Push to Docker Hub') {
             steps {
-                sh 'echo $DOCKER_HUB_CREDS_PSW | docker login -u $DOCKER_HUB_CREDS_USR --password-stdin'
-                sh 'docker push ${IMAGE_NAME}:${IMAGE_TAG}'
-                sh 'docker push ${IMAGE_NAME}:latest'
-            }
-        }
-        
-        stage('Cleanup') {
-            steps {
-                sh 'docker logout'
+                withCredentials([usernamePassword(credentialsId: 'docker-jenkins', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    sh '''
+                    echo $PASSWORD | docker login -u $USERNAME --password-stdin
+                    docker push saadgillani7/ml-app:v1.0.${BUILD_NUMBER}
+                    docker push saadgillani7/ml-app:latest
+                    docker logout
+                    '''
+                }
             }
         }
     }
     
     post {
         success {
-            node {  // Added node block
-                script {
-                    emailext(
-                        subject: "Pipeline Success: ${currentBuild.fullDisplayName}",
-                        body: "The pipeline has been successfully deployed.\nImage: ${env.IMAGE_NAME}:${env.IMAGE_TAG}",
-                        to: "${env.ADMIN_EMAIL}",
-                        from: "jenkins@example.com"
-                    )
-                }
-            }
+            echo "Build successful! Docker image saadgillani7/ml-app:v1.0.${BUILD_NUMBER} has been pushed."
         }
         failure {
-            node {  // Added node block
-                script {
-                    emailext(
-                        subject: "Pipeline Failed: ${currentBuild.fullDisplayName}",
-                        body: "The pipeline has failed. Please check the logs.",
-                        to: "${env.ADMIN_EMAIL}",
-                        from: "jenkins@example.com"
-                    )
-                }
-            }
+            echo "Build failed! Please check the logs for details."
         }
     }
 }
