@@ -12,10 +12,10 @@ pipeline {
             steps {
                 sh '''
                 # Update package lists and install system dependencies
-                apt-get update
-                apt-get install -y python3-pip python3-pytest
+                sudo apt-get update -y
+                sudo apt-get install -y python3-pip python3-pytest
                 
-                # Install required Python packages
+                # Install required Python packages using pip3
                 pip3 install flask pytest
                 '''
             }
@@ -54,9 +54,10 @@ pipeline {
                 mkdir -p $DEPLOY_DIR
                 cp ml-app-v1.0.${BUILD_NUMBER}.tar.gz $DEPLOY_DIR/
                 
-                # Extract for verification
+                # Extract package for verification
                 cd $DEPLOY_DIR
                 tar -xzf ml-app-v1.0.${BUILD_NUMBER}.tar.gz
+                
                 echo "Deployed to $DEPLOY_DIR"
                 '''
             }
