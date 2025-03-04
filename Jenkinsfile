@@ -11,19 +11,19 @@ pipeline {
         stage('Install Python Dependencies') {
             steps {
                 sh '''
-                # (Optional) Update package lists and install python3-venv if not installed.
+                # (Optional) Update package lists and install python3-venv if not already installed.
                 sudo apt-get update -y
                 sudo apt-get install -y python3-venv
-                
+
                 # Create a virtual environment
                 python3 -m venv venv
-                
+
                 # Activate the virtual environment
                 . venv/bin/activate
-                
-                # Upgrade pip, setuptools, and wheel inside the virtual environment
-                pip install --upgrade pip setuptools wheel
-                
+
+                # Upgrade pip, setuptools (to a version that supports Python 3.12), and wheel.
+                pip install --upgrade pip setuptools>=68 wheel
+
                 # Install required Python packages from requirements.txt
                 pip install -r requirements.txt
                 '''
@@ -45,10 +45,10 @@ pipeline {
                 sh '''
                 # Activate the virtual environment
                 . venv/bin/activate
-                
+
                 # Train the model
                 python3 src/model/train.py
-                
+
                 # Create deployment package
                 mkdir -p deployment
                 cp -r src/ deployment/
