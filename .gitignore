@@ -11,11 +11,6 @@ __pycache__/
 *$py.class
 .pytest_cache/
 
-# Data and models
-data/*.csv
-*.pkl
-metrics.txt
-
 # IDE files
 .vscode/
 .idea/
