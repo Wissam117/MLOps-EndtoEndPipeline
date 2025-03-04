@@ -11,7 +11,7 @@ MarkupSafe==3.0.2
 mccabe==0.7.0
 numpy>=1.26.0,<1.27.0
 packaging==24.2
-pandas==1.4.3
+pandas>=2.1.1,<2.3
 pluggy==1.5.0
 py==1.11.0
 pycodestyle==2.9.1
