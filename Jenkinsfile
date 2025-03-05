@@ -83,7 +83,7 @@ pipeline {
             emailext (
                 subject: "Pipeline Success: ML Application Deployment",
                 body: "ML Application has been successfully deployed. Version: v1.0.${BUILD_NUMBER}",
-                to: "saadgillani001@gmail.com"
+                to: "mwissam11@gmail.com"
             )
         }
         failure {
@@ -91,7 +91,7 @@ pipeline {
             emailext (
                 subject: "Pipeline Failed: ML Application Deployment",
                 body: "ML Application deployment failed. Please check Jenkins logs for details.",
-                to: "saadgillani001@gmail.com"
+                to: "mwissam11@gmail.com"
             )
         }
     }
