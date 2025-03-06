@@ -98,8 +98,8 @@ EXPOSE 5000
 CMD ["python", "src/app.py"]
 EOF
 
-                # Build the Docker image
-                docker build -t ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} .
+                # Build the Docker image with full registry path
+                docker build -t docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} .
                 '''
             }
         }
@@ -109,16 +109,16 @@ EOF
                 withCredentials([usernamePassword(credentialsId: 'docker-jenkins', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
                     echo "Logging in to Docker Hub..."
-                    docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+                    echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
                     
                     echo "Pushing image to Docker Hub..."
-                    docker push ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
+                    docker push docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
                     
                     echo "Tagging as latest..."
-                    docker tag ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
+                    docker tag docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
                     
                     echo "Pushing latest tag..."
-                    docker push ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
+                    docker push docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
                     
                     echo "Logging out from Docker Hub..."
                     docker logout
@@ -146,7 +146,7 @@ EOF
 version: '3'
 services:
   ml-app:
-    image: ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
+    image: docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
     ports:
       - "5000:5000"
     restart: unless-stopped
@@ -159,10 +159,10 @@ EOF
     post {
         success {
             echo "Build successful! ML application deployed to /var/lib/jenkins/deployed-apps/ml-app-v1.0.${BUILD_NUMBER}"
-            echo "Docker image pushed to Docker Hub: ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+            echo "Docker image pushed to Docker Hub: docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
             emailext (
                 subject: "Pipeline Success: ML Application Deployment",
-                body: "ML Application has been successfully deployed.\nVersion: v1.0.${BUILD_NUMBER}\nDocker Image: ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}",
+                body: "ML Application has been successfully deployed.\nVersion: v1.0.${BUILD_NUMBER}\nDocker Image: docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}",
                 to: "mwissam11@gmail.com"
             )
         }
