@@ -5,7 +5,7 @@ pipeline {
         // Define Docker Hub credentials ID that you've configured in Jenkins
         DOCKER_CREDENTIALS = credentials('docker-jenkins')
         // Your Docker Hub username
-        DOCKER_USERNAME = 'SaadGillani7'
+        DOCKER_USERNAME = 'saadgillani7'
         // Your Docker image name
         DOCKER_IMAGE_NAME = 'ml-app'
         // Tag with build number for versioning
