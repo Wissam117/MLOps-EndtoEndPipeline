@@ -103,28 +103,29 @@ EOF
                 '''
             }
         }
-        
+
         stage('Push to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'docker-jenkins', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
+                    echo "Logging in to Docker Hub..."
                     docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
                     
-                    # Push to Docker Hub using the full registry path
-                    docker push docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
+                    echo "Pushing image to Docker Hub..."
+                    docker push ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
                     
-                    # Tag as latest
-                    docker tag ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
+                    echo "Tagging as latest..."
+                    docker tag ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
                     
-                    # Push latest tag
-                    docker push docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
+                    echo "Pushing latest tag..."
+                    docker push ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
                     
+                    echo "Logging out from Docker Hub..."
                     docker logout
                     '''
                 }
             }
         }
-
         
         stage('Deploy Application') {
             steps {
@@ -141,7 +142,7 @@ EOF
                 echo "Deployed to $DEPLOY_DIR"
                 
                 # Create a docker-compose.yml file for easy deployment
-                cat > docker-compose.yml << 'EOF'
+                cat > docker-compose.yml << EOF
 version: '3'
 services:
   ml-app:
