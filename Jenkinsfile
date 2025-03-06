@@ -1,6 +1,17 @@
 pipeline {
     agent any
     
+    environment {
+        // Define Docker Hub credentials ID that you've configured in Jenkins
+        DOCKER_CREDENTIALS = credentials('docker-jenkins')
+        // Your Docker Hub username
+        DOCKER_USERNAME = 'saadgillani7'
+        // Your Docker image name
+        DOCKER_IMAGE_NAME = 'ml-app'
+        // Tag with build number for versioning
+        DOCKER_IMAGE_TAG = "v1.0.${BUILD_NUMBER}"
+    }
+    
     stages {
         stage('Checkout') {
             steps {
@@ -59,6 +70,63 @@ pipeline {
             }
         }
         
+        stage('Dockerize Application') {
+            steps {
+                sh '''
+                # Create a Dockerfile in the workspace
+                cat > Dockerfile << 'EOF'
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# Copy requirements first to leverage Docker cache
+COPY deployment/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code and model
+COPY deployment/src/ ./src/
+COPY deployment/model.pkl .
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV MODEL_PATH=model.pkl
+
+# Expose the port the app runs on
+EXPOSE 5000
+
+# Command to run the application
+CMD ["python", "src/app.py"]
+EOF
+
+                # Build the Docker image with full registry path
+                docker build -t docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} .
+                '''
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-jenkins', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                    echo "Logging in to Docker Hub..."
+                    echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
+                    
+                    echo "Pushing image to Docker Hub..."
+                    docker push docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
+                    
+                    echo "Tagging as latest..."
+                    docker tag docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
+                    
+                    echo "Pushing latest tag..."
+                    docker push docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
+                    
+                    echo "Logging out from Docker Hub..."
+                    docker logout
+                    '''
+                }
+            }
+        }
+        
         stage('Deploy Application') {
             steps {
                 sh '''
@@ -72,6 +140,17 @@ pipeline {
                 tar -xzf ml-app-v1.0.${BUILD_NUMBER}.tar.gz
                 
                 echo "Deployed to $DEPLOY_DIR"
+                
+                # Create a docker-compose.yml file for easy deployment
+                cat > docker-compose.yml << EOF
+version: '3'
+services:
+  ml-app:
+    image: docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+EOF
                 '''
             }
         }
@@ -80,18 +159,19 @@ pipeline {
     post {
         success {
             echo "Build successful! ML application deployed to /var/lib/jenkins/deployed-apps/ml-app-v1.0.${BUILD_NUMBER}"
+            echo "Docker image pushed to Docker Hub: docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
             emailext (
                 subject: "Pipeline Success: ML Application Deployment",
-                body: "ML Application has been successfully deployed. Version: v1.0.${BUILD_NUMBER}",
-                to: "mwissam11@gmail.com"
+                body: "ML Application has been successfully deployed.\nVersion: v1.0.${BUILD_NUMBER}\nDocker Image: docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}",
+                to: "godsu46@gmail.com"
             )
         }
         failure {
-            echo "Build failed! Please check the logs for details."
+            echo "Build failed! Sorry Please check the logs for details."
             emailext (
                 subject: "Pipeline Failed: ML Application Deployment",
                 body: "ML Application deployment failed. Please check Jenkins logs for details.",
-                to: "mwissam11@gmail.com"
+                to: "godsu46@gmail.com"
             )
         }
     }
