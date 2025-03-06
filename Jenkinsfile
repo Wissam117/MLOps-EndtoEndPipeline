@@ -106,22 +106,25 @@ EOF
         
         stage('Push to Docker Hub') {
             steps {
-                sh '''
-                # Login to Docker Hub
-                echo ${DOCKER_CREDENTIALS_PSW} | docker login -u ${DOCKER_CREDENTIALS_USR} --password-stdin
-                
-                # Push the Docker image
-                docker push ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
-                
-                # Also tag and push as latest
-                docker tag ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
-                docker push ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
-                
-                # Logout from Docker Hub
-                docker logout
-                '''
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                    docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+                    
+                    # Push to Docker Hub using the full registry path
+                    docker push docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
+                    
+                    # Tag as latest
+                    docker tag ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
+                    
+                    # Push latest tag
+                    docker push docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
+                    
+                    docker logout
+                    '''
+                }
             }
         }
+
         
         stage('Deploy Application') {
             steps {
