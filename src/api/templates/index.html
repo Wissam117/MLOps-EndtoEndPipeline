@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wine Quality Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #722F37;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #722F37;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto;
+        }
+        button:hover {
+            background-color: #5e2730;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #f0f0f0;
+            display: none;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .result-display {
+            font-size: 24px;
+            text-align: center;
+            color: #722F37;
+            font-weight: bold;
+        }
+        .loading {
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Wine Quality Prediction</h1>
+        
+        <p>Enter the chemical properties of your wine to predict its quality rating (1-10).</p>
+        
+        <form id="wineForm">
+            <div class="feature-grid">
+                <div class="form-group">
+                    <label for="fixed_acidity">Fixed Acidity</label>
+                    <input type="number" id="fixed_acidity" step="0.01" value="7.0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="volatile_acidity">Volatile Acidity</label>
+                    <input type="number" id="volatile_acidity" step="0.01" value="0.3" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="citric_acid">Citric Acid</label>
+                    <input type="number" id="citric_acid" step="0.01" value="0.3" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="residual_sugar">Residual Sugar</label>
+                    <input type="number" id="residual_sugar" step="0.01" value="1.6" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="chlorides">Chlorides</label>
+                    <input type="number" id="chlorides" step="0.001" value="0.05" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="free_sulfur_dioxide">Free Sulfur Dioxide</label>
+                    <input type="number" id="free_sulfur_dioxide" step="0.1" value="15.0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="total_sulfur_dioxide">Total Sulfur Dioxide</label>
+                    <input type="number" id="total_sulfur_dioxide" step="0.1" value="40.0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="density">Density</label>
+                    <input type="number" id="density" step="0.0001" value="0.9934" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ph">pH</label>
+                    <input type="number" id="ph" step="0.01" value="3.3" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sulphates">Sulphates</label>
+                    <input type="number" id="sulphates" step="0.01" value="0.6" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="alcohol">Alcohol</label>
+                    <input type="number" id="alcohol" step="0.1" value="10.5" required>
+                </div>
+            </div>
+            
+            <button type="submit">Predict Quality</button>
+        </form>
+        
+        <div class="loading" id="loading">
+            Predicting quality...
+        </div>
+        
+        <div id="result">
+            <h2>Prediction Result</h2>
+            <p>The predicted quality of your wine is:</p>
+            <div class="result-display" id="prediction-value">--</div>
+            <p id="model-version">Model version: --</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('wineForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Show loading indicator
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            
+            // Get all input values
+            const features = [
+                parseFloat(document.getElementById('fixed_acidity').value),
+                parseFloat(document.getElementById('volatile_acidity').value),
+                parseFloat(document.getElementById('citric_acid').value),
+                parseFloat(document.getElementById('residual_sugar').value),
+                parseFloat(document.getElementById('chlorides').value),
+                parseFloat(document.getElementById('free_sulfur_dioxide').value),
+                parseFloat(document.getElementById('total_sulfur_dioxide').value),
+                parseFloat(document.getElementById('density').value),
+                parseFloat(document.getElementById('ph').value),
+                parseFloat(document.getElementById('sulphates').value),
+                parseFloat(document.getElementById('alcohol').value)
+            ];
+            
+            try {
+                // Send prediction request to API
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ features }),
+                });
+                
+                const data = await response.json();
+                
+                // Hide loading indicator
+                document.getElementById('loading').style.display = 'none';
+                
+                if (response.ok) {
+                    // Display prediction result
+                    document.getElementById('prediction-value').textContent = 
+                        data.prediction[0].toFixed(1);
+                    document.getElementById('model-version').textContent = 
+                        `Model version: ${data.model_version}`;
+                    document.getElementById('result').style.display = 'block';
+                } else {
+                    // Display error
+                    alert(`Error: ${data.error || 'Unknown error occurred'}`);
+                }
+            } catch (error) {
+                // Hide loading indicator
+                document.getElementById('loading').style.display = 'none';
+                alert('Failed to connect to the prediction service. Please try again later.');
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

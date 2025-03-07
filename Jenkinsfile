@@ -167,9 +167,9 @@ EOF
             )
         }
         failure {
-            echo "Build failed! Sorry Please check the logs for details."
+            echo "Build failed! hehe Please check the logs for details."
             emailext (
-                subject: "Pipeline Failed: ML Application Deployment",
+                subject: "Pipeline Failed: sad man ML Application Deployment",
                 body: "ML Application deployment failed. Please check Jenkins logs for details.",
                 to: "godsu46@gmail.com"
             )
