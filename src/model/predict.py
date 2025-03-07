@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import tensorflow as tf
-from sklearn.preprocessing import StandardScaler
 
 
 def load_model(model_path='model.keras'):
@@ -20,7 +19,7 @@ def make_prediction(model, features):
     # Ensure features are in the right format
     features_array = np.array(features).reshape(1, -1)
     prediction = model.predict(features_array)
-    
+
     return {
         'prediction': prediction.flatten().tolist(),
         'probability': 1.0  # Placeholder for regression model

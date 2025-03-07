@@ -1,5 +1,5 @@
 from src.model.predict import make_prediction
-from src.model.train import load_data, train_model
+from src.model.train import train_model
 import unittest
 import os
 import sys
@@ -20,14 +20,14 @@ class TestModelFunctions(unittest.TestCase):
         self.test_data_path = 'data/WineQT.csv'
         X = np.random.rand(20, 11)  # 11 features for wine quality data
         y = 3 + 2 * X[:, 0] + X[:, 1]  # Simple regression formula
-        
+
         # Column names based on wine quality dataset
         feature_names = [
-            'fixed_acidity', 'volatile_acidity', 'citric_acid', 
+            'fixed_acidity', 'volatile_acidity', 'citric_acid',
             'residual_sugar', 'chlorides', 'free_sulfur_dioxide',
             'total_sulfur_dioxide', 'density', 'ph', 'sulphates', 'alcohol'
         ]
-        
+
         data = pd.DataFrame(X, columns=feature_names)
         data['quality'] = y  # Target column name is 'quality'
 

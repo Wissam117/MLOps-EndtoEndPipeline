@@ -25,14 +25,14 @@ class TestFlaskAPI(unittest.TestCase):
             tf.keras.layers.Dense(10, activation='relu'),
             tf.keras.layers.Dense(1)
         ])
-        
+
         model.compile(optimizer='adam', loss='mse')
-        
+
         # Train the model with dummy data
         X = np.random.rand(20, 4)
         y = (X[:, 0] + X[:, 1] > 1).astype(float)
         model.fit(X, y, epochs=1, verbose=0)
-        
+
         # Save the model
         model.save(self.test_model_path)
 
