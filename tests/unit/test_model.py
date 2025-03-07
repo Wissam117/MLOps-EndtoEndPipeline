@@ -25,7 +25,7 @@ class TestModelFunctions(unittest.TestCase):
         feature_names = [
             'fixed_acidity', 'volatile_acidity', 'citric_acid', 
             'residual_sugar', 'chlorides', 'free_sulfur_dioxide',
-            'total_sulfur_dioxide', 'density', 'ph', 'sulphates', 'alcohol'
+            'total_sulfur_dioxide', 'density', 'ph', 'sulphates', 'alcohol','Id'
         ]
         
         data = pd.DataFrame(X, columns=feature_names)
