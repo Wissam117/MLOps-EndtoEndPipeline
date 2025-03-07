@@ -38,28 +38,12 @@ class TestModelFunctions(unittest.TestCase):
         self.test_model_path = 'model.keras'
         self.test_data = data
 
-    def test_load_data(file_path):
-        """
-        Load wine quality data from CSV file
-        
-        Args:
-            file_path (str): Path to the CSV file
-            
-        Returns:
-            pd.DataFrame: Loaded data
-        """
-        try:
-            # Load data from CSV file
-            data = pd.read_csv(file_path)
-            
-            # Basic validation
-            if data.shape[1] != 12:
-                print(f"Warning: Expected 12 columns but found {data.shape[1]}")
-            
-            return data
-        except Exception as e:
-            print(f"Error loading data: {e}")
-            raise
+    def test_load_data(self):
+        """Test data loading function"""
+        data = load_data(self.test_data_path)
+        self.assertIsInstance(data, pd.DataFrame)
+        self.assertEqual(data.shape[1], 11)  
+        self.assertEqual(data.shape[0], 20)
 
     def test_train_model(self):
         """Test model training function"""
