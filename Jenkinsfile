@@ -65,6 +65,7 @@ pipeline {
                 cp -r src/ deployment/
                 cp model.pkl deployment/
                 cp requirements.txt deployment/
+                cp -r data/ deployment/    # <-- Copy the data directory
                 tar -czf ml-app-v1.0.${BUILD_NUMBER}.tar.gz deployment/
                 '''
             }
@@ -83,9 +84,10 @@ WORKDIR /app
 COPY deployment/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code and model
+# Copy application code, model, and data
 COPY deployment/src/ ./src/
 COPY deployment/model.pkl .
+COPY deployment/data/ ./data/    # <-- Copy the data directory
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
