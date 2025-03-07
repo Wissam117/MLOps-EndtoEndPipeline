@@ -1,12 +1,10 @@
-import numpy as np 
-import pandas as pd 
+import numpy as np
+import pandas as pd
 import tensorflow as tf
 from tensorflow.keras.callbacks import ModelCheckpoint
 import os
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 
 def load_data(data_path='data/WineQT.csv'):
@@ -22,25 +20,22 @@ def load_data(data_path='data/WineQT.csv'):
 
 def train_model(data, model_path='model.keras'):
     """Train a simple ML model and save to disk"""
-        # Prepare data
-    train, test = train_test_split(data, test_size=0.2, random_state = 1)
-    train.shape,test.shape
+    # Prepare data
+    train, test = train_test_split(data, test_size=0.2, random_state=1)
+    train.shape, test.shape
     train_stats = train.describe()
     train_stats.pop('quality')
     train_stats = train_stats.transpose()
     train_stats
-    x_train=train.drop('quality',axis=1)
-    x_test=test.drop('quality',axis=1)
+    x_train = train.drop('quality', axis=1)
+    x_test = test.drop('quality', axis=1)
 
-    y_train=train['quality']
-    y_test=test['quality']
-
+    y_train = train['quality']
+    y_test = test['quality']
 
     scaler = StandardScaler()
     norm_train_X = scaler.fit_transform(x_train)
-    norm_test_X = scaler.transform(x_test) 
-
-
+    norm_test_X = scaler.transform(x_test)
 
     model = tf.keras.Sequential([
         tf.keras.layers.Input(shape=(len(norm_train_X[0]),)),
@@ -50,9 +45,8 @@ def train_model(data, model_path='model.keras'):
     ])
 
     model.compile(loss='mse',
-                    optimizer='adam',
-                    metrics=['mae', 'root_mean_squared_error'])
-
+                  optimizer='adam',
+                  metrics=['mae', 'root_mean_squared_error'])
 
     # Define the checkpoint callback
     checkpoint_callback = ModelCheckpoint(
@@ -62,17 +56,24 @@ def train_model(data, model_path='model.keras'):
         mode='min',                # 'min' for loss, 'max' for accuracy
         verbose=0                # Print a message when saving the model
     )
-    history = model.fit(norm_train_X, y_train,validation_data=(norm_test_X, y_test),epochs=100,callbacks=[checkpoint_callback] )
-    model=tf.keras.models.load_model('model.keras')
-    loss, mae, mse = model.evaluate(norm_test_X, y_test, verbose=2)
+    model.fit(
+        norm_train_X,
+        y_train,
+        validation_data=(
+            norm_test_X,
+            y_test),
+        epochs=100,
+        callbacks=[checkpoint_callback])
+    model = tf.keras.models.load_model('model.keras')
     y_pred = model.predict(norm_test_X).flatten()
+
     def regression_accuracy(y_true, y_pred, threshold=0.5):
         correct = 0
         for true, pred in zip(y_true, y_pred):
             if abs(true - pred) <= threshold:
                 correct += 1
         return correct / len(y_true)
-    
+
     accuracy = regression_accuracy(y_test, y_pred, threshold=0.5)
 
     return model, accuracy

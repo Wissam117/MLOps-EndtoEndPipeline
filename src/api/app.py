@@ -71,7 +71,7 @@ def predict():
 
         # Make prediction with TensorFlow model
         prediction = model.predict(features)
-        
+
         # Convert to regular Python types for JSON serialization
         prediction_list = prediction.flatten().tolist()
 
