@@ -60,8 +60,7 @@ pipeline {
                     # Create data directory if it doesn't exist
                     mkdir -p data
                     
-                    # Copy the dataset from your local machine to Jenkins workspace
-                    # Option 1: If Jenkins runs on the same machine
+                    # Copy the dataset
                     cp /home/saad/Desktop/ML-CICD-pipeline/data/WineQT.csv data/
                     
                     # Train the model
@@ -70,7 +69,7 @@ pipeline {
                     # Create deployment package
                     mkdir -p deployment
                     cp -r src/ deployment/
-                    cp model.pkl deployment/
+                    cp model.keras deployment/  # <-- Change this line
                     cp requirements.txt deployment/
                     cp -r data/ deployment/
                     tar -czf ml-app-v1.0.${BUILD_NUMBER}.tar.gz deployment/

@@ -9,12 +9,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code, model, and data
 COPY deployment/src/ ./src/
-COPY deployment/model.pkl .
+COPY deployment/model.keras .
 COPY deployment/data/ ./data/   # <-- Add this line
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
-ENV MODEL_PATH=model.pkl
+ENV MODEL_PATH=model.keras
 
 # Expose the port the app runs on
 EXPOSE 5000
