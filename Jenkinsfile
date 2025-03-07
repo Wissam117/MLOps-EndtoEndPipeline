@@ -54,25 +54,33 @@ pipeline {
         stage('Build Application') {
             steps {
                 sh '''
-                    # Activate the virtual environment
-                    . venv/bin/activate
+                # Activate the virtual environment
+                . venv/bin/activate
 
-                    # Create data directory if it doesn't exist
-                    mkdir -p data
-                    
-                    # Copy the dataset
-                    cp /home/saad/Desktop/ML-CICD-pipeline/data/WineQT.csv data/
-                    
-                    # Train the model
-                    python3 src/model/train.py
+                # Create data directory if it doesn't exist
+                mkdir -p data
+                
+                # Copy the dataset
+                cp /home/saad/Desktop/ML-CICD-pipeline/data/WineQT.csv data/
+                
+                # Train the model
+                python3 src/model/train.py
 
-                    # Create deployment package
-                    mkdir -p deployment
-                    cp -r src/ deployment/
-                    cp model.keras deployment/  # <-- Change this line
-                    cp requirements.txt deployment/
-                    cp -r data/ deployment/
-                    tar -czf ml-app-v1.0.${BUILD_NUMBER}.tar.gz deployment/
+                # Create deployment package
+                mkdir -p deployment
+                mkdir -p deployment/data  # Explicitly create data directory in deployment
+                cp -r src/ deployment/
+                cp model.keras deployment/
+                cp requirements.txt deployment/
+                cp -r data/*.csv deployment/data/  # Copy only CSV files to be explicit
+                
+                # List files for debugging
+                echo "Contents of deployment directory:"
+                ls -la deployment/
+                echo "Contents of deployment/data directory:"
+                ls -la deployment/data/
+                
+                tar -czf ml-app-v1.0.${BUILD_NUMBER}.tar.gz deployment/
                 '''
             }
         }
@@ -92,12 +100,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code, model, and data
 COPY deployment/src/ ./src/
-COPY deployment/model.pkl .
-COPY deployment/data/ ./data/    # <-- Copy the data directory
+COPY deployment/model.keras .
+COPY deployment/data/ ./data/
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
-ENV MODEL_PATH=model.pkl
+ENV MODEL_PATH=model.keras
 
 # Expose the port the app runs on
 EXPOSE 5000

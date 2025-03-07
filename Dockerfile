@@ -1,4 +1,3 @@
-cat > Dockerfile << 'EOF'
 FROM python:3.9-slim
 
 WORKDIR /app
@@ -10,7 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code, model, and data
 COPY deployment/src/ ./src/
 COPY deployment/model.keras .
-COPY deployment/data/ ./data/   # <-- Add this line
+COPY deployment/data/ ./data/
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
@@ -21,4 +20,3 @@ EXPOSE 5000
 
 # Command to run the application
 CMD ["python", "src/app.py"]
-EOF
