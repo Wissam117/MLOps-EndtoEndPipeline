@@ -54,19 +54,26 @@ pipeline {
         stage('Build Application') {
             steps {
                 sh '''
-                # Activate the virtual environment
-                . venv/bin/activate
+                    # Activate the virtual environment
+                    . venv/bin/activate
 
-                # Train the model
-                python3 src/model/train.py
+                    # Create data directory if it doesn't exist
+                    mkdir -p data
+                    
+                    # Copy the dataset from your local machine to Jenkins workspace
+                    # Option 1: If Jenkins runs on the same machine
+                    cp /home/saad/Desktop/ML-CICD-pipeline/data/WineQT.csv data/
+                    
+                    # Train the model
+                    python3 src/model/train.py
 
-                # Create deployment package
-                mkdir -p deployment
-                cp -r src/ deployment/
-                cp model.pkl deployment/
-                cp requirements.txt deployment/
-                cp -r data/ deployment/    # <-- Copy the data directory
-                tar -czf ml-app-v1.0.${BUILD_NUMBER}.tar.gz deployment/
+                    # Create deployment package
+                    mkdir -p deployment
+                    cp -r src/ deployment/
+                    cp model.pkl deployment/
+                    cp requirements.txt deployment/
+                    cp -r data/ deployment/
+                    tar -czf ml-app-v1.0.${BUILD_NUMBER}.tar.gz deployment/
                 '''
             }
         }
