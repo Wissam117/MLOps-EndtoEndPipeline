@@ -16,7 +16,7 @@ class TestFlaskAPI(unittest.TestCase):
     def setUp(self):
         """Set up test environment before each test method"""
         # Create a test model
-        self.test_model_path = os.path.abspath('test_model.keras')
+        self.test_model_path = os.path.abspath('model.keras')
         print(f"Creating test model at: {self.test_model_path}")
 
         # Create a simple TensorFlow model instead of RandomForest

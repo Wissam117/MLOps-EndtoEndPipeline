@@ -17,7 +17,7 @@ class TestModelFunctions(unittest.TestCase):
     def setUp(self):
         """Set up test environment before each test method"""
         # Create a test dataset
-        self.test_data_path = 'tests/test_data.csv'
+        self.test_data_path = 'data/WineQT.csv'
         X = np.random.rand(20, 11)  # 11 features for wine quality data
         y = 3 + 2 * X[:, 0] + X[:, 1]  # Simple regression formula
         
@@ -36,7 +36,7 @@ class TestModelFunctions(unittest.TestCase):
         data.to_csv(self.test_data_path, index=False)
 
         # Train and save a test model
-        self.test_model_path = 'tests/test_model.keras'
+        self.test_model_path = 'data/model.keras'
         self.test_data = data
 
     def test_load_data(self):
