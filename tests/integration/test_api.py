@@ -4,8 +4,7 @@ import os
 import sys
 import json
 import numpy as np
-import pickle
-from sklearn.ensemble import RandomForestClassifier
+import tensorflow as tf
 
 # Add the src directory to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
@@ -17,17 +16,25 @@ class TestFlaskAPI(unittest.TestCase):
     def setUp(self):
         """Set up test environment before each test method"""
         # Create a test model
-        self.test_model_path = os.path.abspath('test_model.pkl')
+        self.test_model_path = os.path.abspath('test_model.keras')
         print(f"Creating test model at: {self.test_model_path}")
 
-        model = RandomForestClassifier(n_estimators=10, random_state=42)
+        # Create a simple TensorFlow model instead of RandomForest
+        model = tf.keras.Sequential([
+            tf.keras.layers.Input(shape=(4,)),
+            tf.keras.layers.Dense(10, activation='relu'),
+            tf.keras.layers.Dense(1)
+        ])
+        
+        model.compile(optimizer='adam', loss='mse')
+        
+        # Train the model with dummy data
         X = np.random.rand(20, 4)
-        y = (X[:, 0] + X[:, 1] > 1).astype(int)
-        model.fit(X, y)
-
+        y = (X[:, 0] + X[:, 1] > 1).astype(float)
+        model.fit(X, y, epochs=1, verbose=0)
+        
         # Save the model
-        with open(self.test_model_path, 'wb') as f:
-            pickle.dump(model, f)
+        model.save(self.test_model_path)
 
         # Verify model exists
         print(f"Model file exists: {os.path.exists(self.test_model_path)}")

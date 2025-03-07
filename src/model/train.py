@@ -1,62 +1,86 @@
+import numpy as np 
+import pandas as pd 
+import tensorflow as tf
+from tensorflow.keras.callbacks import ModelCheckpoint
 import os
-import pickle
-import pandas as pd
-import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
-def load_data(data_path='data/dataset.csv'):
+def load_data(data_path='data/WineQT.csv'):
     """Load data for training"""
-    if not os.path.exists(data_path):
-        # If no dataset, create a simple synthetic dataset
-        print(f"Dataset not found at {data_path}, creating synthetic data...")
-        X = np.random.rand(100, 4)
-        y = (X[:, 0] + X[:, 1] > 1).astype(int)
-        data = pd.DataFrame(X, columns=[f'feature_{i}' for i in range(4)])
-        data['target'] = y
-
-        # Ensure directory exists
-        os.makedirs(os.path.dirname(data_path), exist_ok=True)
-        data.to_csv(data_path, index=False)
-    else:
-        print(f"Loading dataset from {data_path}")
-        data = pd.read_csv(data_path)
+    data = pd.read_csv(data_path)
+    data = data.drop(['Id'], axis=1)
+    data = data.drop_duplicates(keep='first')
+    data = data.iloc[np.random.permutation(len(data))]
+    data['quality'].hist(bins=20)
 
     return data
 
 
-def train_model(data, model_path='model.pkl'):
+def train_model(data, model_path='model.keras'):
     """Train a simple ML model and save to disk"""
-    # Prepare data
-    X = data.drop('target', axis=1)
-    y = data['target']
+        # Prepare data
+    train, test = train_test_split(data, test_size=0.2, random_state = 1)
+    train.shape,test.shape
+    train_stats = train.describe()
+    train_stats.pop('quality')
+    train_stats = train_stats.transpose()
+    train_stats
+    x_train=train.drop('quality',axis=1)
+    x_test=test.drop('quality',axis=1)
 
-    # Split data
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    y_train=train['quality']
+    y_test=test['quality']
 
-    # Train model
-    print("Training model...")
-    model = RandomForestClassifier(n_estimators=100, random_state=42)
-    model.fit(X_train, y_train)
 
-    # Evaluate model
-    y_pred = model.predict(X_test)
-    accuracy = accuracy_score(y_test, y_pred)
-    print(f"Model accuracy: {accuracy:.4f}")
+    scaler = StandardScaler()
+    norm_train_X = scaler.fit_transform(x_train)
+    norm_test_X = scaler.transform(x_test) 
 
-    # Save model
-    print(f"Saving model to {model_path}")
-    with open(model_path, 'wb') as f:
-        pickle.dump(model, f)
+
+
+    model = tf.keras.Sequential([
+        tf.keras.layers.Input(shape=(len(norm_train_X[0]),)),
+        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.Dense(1)
+    ])
+
+    model.compile(loss='mse',
+                    optimizer='adam',
+                    metrics=['mae', 'root_mean_squared_error'])
+
+
+    # Define the checkpoint callback
+    checkpoint_callback = ModelCheckpoint(
+        filepath='model.keras',
+        monitor='val_root_mean_squared_error',        # Metric to monitor (e.g., validation loss)
+        save_best_only=True,       # Save only the best model
+        mode='min',                # 'min' for loss, 'max' for accuracy
+        verbose=0                # Print a message when saving the model
+    )
+    history = model.fit(norm_train_X, y_train,validation_data=(norm_test_X, y_test),epochs=100,callbacks=[checkpoint_callback] )
+    model=tf.keras.models.load_model('model.keras')
+    loss, mae, mse = model.evaluate(norm_test_X, y_test, verbose=2)
+    y_pred = model.predict(norm_test_X).flatten()
+    def regression_accuracy(y_true, y_pred, threshold=0.5):
+        correct = 0
+        for true, pred in zip(y_true, y_pred):
+            if abs(true - pred) <= threshold:
+                correct += 1
+        return correct / len(y_true)
+    
+    accuracy = regression_accuracy(y_test, y_pred, threshold=0.5)
 
     return model, accuracy
 
 
 if __name__ == '__main__':
-    data_path = os.environ.get('DATA_PATH', 'data/dataset.csv')
-    model_path = os.environ.get('MODEL_PATH', 'model.pkl')
+    data_path = os.environ.get('DATA_PATH', 'data/WineQT.csv')
+    model_path = os.environ.get('MODEL_PATH', 'model.keras')
 
     data = load_data(data_path)
     model, accuracy = train_model(data, model_path)
