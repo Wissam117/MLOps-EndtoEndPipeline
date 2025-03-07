@@ -34,17 +34,16 @@ class TestModelFunctions(unittest.TestCase):
         # Ensure directory exists
         os.makedirs(os.path.dirname(self.test_data_path), exist_ok=True)
         data.to_csv(self.test_data_path, index=False)
-
         # Train and save a test model
-        self.test_model_path = 'data/model.keras'
+        self.test_model_path = 'model.keras'
         self.test_data = data
 
     def test_load_data(self):
         """Test data loading function"""
         data = load_data(self.test_data_path)
         self.assertIsInstance(data, pd.DataFrame)
-        self.assertEqual(data.shape[1], 12)  # 11 features + quality
-        self.assertEqual(data.shape[0], 20)  # 20 samples
+        self.assertEqual(data.shape[1], 12)  
+        self.assertEqual(data.shape[0], 20)
 
     def test_train_model(self):
         """Test model training function"""
