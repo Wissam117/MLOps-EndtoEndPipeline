@@ -15,7 +15,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'
 
 class TestModelFunctions(unittest.TestCase):
     def setUp(self):
-        """Set up test environment before each test method"""
+        """Set up test environment before each test method for accuracy"""
         # Create a test dataset
         self.test_data_path = 'data/WineQT.csv'
         X = np.random.rand(20, 11)  # 11 features for wine quality data
