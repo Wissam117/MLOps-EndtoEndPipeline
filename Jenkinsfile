@@ -5,7 +5,7 @@ pipeline {
         // Define Docker Hub credentials ID that you've configured in Jenkins
         DOCKER_CREDENTIALS = credentials('docker-jenkins')
         // Your Docker Hub username
-        DOCKER_USERNAME = 'saadgillani7'
+        DOCKER_USERNAME = 'wissamwissam'
         // Your Docker image name
         DOCKER_IMAGE_NAME = 'ml-app'
         // Tag with build number for versioning
@@ -61,7 +61,7 @@ pipeline {
                 mkdir -p data
                 
                 # Copy the dataset
-                cp /home/saad/Desktop/ML-CICD-pipeline/data/WineQT.csv data/
+                #cp /home/saad/Desktop/ML-CICD-pipeline/data/WineQT.csv data/ ##change
                 
                 # Train the model
                 python3 src/model/train.py
@@ -179,7 +179,7 @@ EOF
             emailext (
                 subject: "Pipeline Success: ML Application Deployment",
                 body: "ML Application has been successfully deployed.\nVersion: v1.0.${BUILD_NUMBER}\nDocker Image: docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}",
-                to: "godsu46@gmail.com"
+                to: "mwissam11@gmail.com"
             )
         }
         failure {
@@ -187,7 +187,7 @@ EOF
             emailext (
                 subject: "Pipeline Failed: sad man ML Application Deployment",
                 body: "ML Application deployment failed. Please check Jenkins logs for details.",
-                to: "godsu46@gmail.com"
+                to: "mwissam11@gmail.com"
             )
         }
     }
