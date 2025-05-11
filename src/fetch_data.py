@@ -1,21 +1,19 @@
 import os
-import zipfile
 from kaggle.api.kaggle_api_extended import KaggleApi
 
-# Define paths
+# Define dataset and relative path to data folder
 kaggle_dataset = "yasserh/wine-quality-dataset"
-project_path = "project_path"
-data_dir = os.path.join(project_path, "data")
+data_dir = os.path.join("..", "data")
 os.makedirs(data_dir, exist_ok=True)
 
 # Authenticate with Kaggle
 api = KaggleApi()
 api.authenticate()
 
-# Download dataset as zip
+# Download and unzip dataset
 api.dataset_download_files(kaggle_dataset, path=data_dir, unzip=True)
 
-# Identify and rename the relevant file
+# Rename the WineQT.csv file
 original_file = os.path.join(data_dir, "WineQT.csv")
 target_file = os.path.join(data_dir, "WineQT_unprocessed.csv")
 
