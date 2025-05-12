@@ -23,12 +23,9 @@ stages:
     outs:
       - model.keras
   
-#  evaluate:
-#    cmd: python src/generate_metrics.py
-#    deps:
-#      - src/generate_metrics.py
-#      - models/model.pkl
-#      - data/processed_data.csv
-#    metrics:
-#      - metrics.json:
-#          cache: false
+  evaluate:
+    cmd: python mlflow.py
+    deps:
+      - mlflow.py
+      - model.keras
+      - data/WineQT.csv
