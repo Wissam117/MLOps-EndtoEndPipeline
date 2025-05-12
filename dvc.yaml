@@ -14,7 +14,7 @@ stages:
       - data/WineQT_unprocessed.csv
     outs:
       - data/WineQT.csv
-  
+
   train:
     cmd: python src/model/train.py
     deps:
@@ -22,10 +22,11 @@ stages:
       - data/WineQT.csv
     outs:
       - model.keras
+# 
+#  evaluate:
+#    cmd: python mlflow_.py
+#    deps:
+#      - mlflow.py
+#      - model.keras
+#      - data/WineQT.csv
   
-  evaluate:
-    cmd: python mlflow.py
-    deps:
-      - mlflow.py
-      - model.keras
-      - data/WineQT.csv

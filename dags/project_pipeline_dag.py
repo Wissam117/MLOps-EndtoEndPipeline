@@ -49,21 +49,21 @@ train_task = BashOperator(
 
 #evaluate_task = BashOperator(
 #    task_id='evaluate_model',
-#    bash_command=f'cd {project_path} && pip install mlflow && pip install tensorflow && python src/mlflow.py',
+#    bash_command=f'cd {project_path} && pip install mlflow && pip install tensorflow && python mlflow.py',
 #    dag=dag,
 #)
 
-#dvc_version_task = BashOperator(
-#    task_id='version_with_dvc',
-#    bash_command=f'''
-#    cd {project_path} &&
-#    dvc repro &&
-#    git add data/*.dvc models/*.dvc metrics.json .gitignore &&
-#    git commit -m "Update data and model via Airflow" || echo "No changes to commit" &&
-#    dvc push || echo "DVC push failed, check authentication"
-#    ''',
-#    dag=dag,
-#)
+dvc_version_task = BashOperator(
+    task_id='version_with_dvc',
+    bash_command=f'''
+    cd {project_path} &&
+    dvc repro &&
+    git add data/*.dvc model.keras.dvc .gitignore &&
+    git commit -m "Update data and model via Airflow" || echo "No changes to commit" &&
+    dvc push || echo "DVC push failed, check authentication"
+    ''',
+    dag=dag,
+)
 
 # Define task dependencies
-fetch_task >> preprocess_task >> train_task #>> dvc_version_task
+fetch_task >> preprocess_task >> train_task >> dvc_version_task
