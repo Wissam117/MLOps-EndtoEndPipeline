@@ -1,4 +1,4 @@
-
+       
 stages:
   fetch:
     cmd: python src/fetch_data.py
