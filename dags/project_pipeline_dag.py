@@ -67,3 +67,8 @@ dvc_version_task = BashOperator(
 
 # Define task dependencies
 fetch_task >> preprocess_task >> train_task >> dvc_version_task
+
+#dvc init &&
+#   dvc remote modify gdrive_remote gdrive_use_service_account true &&
+#    dvc remote modify gdrive_remote gdrive_service_account_json_file_path src/dvc.json
+#    dvc remote add -d gdrive_remote gdrive://Joq6kLb1Y8FmvCgGwcjJu8Hu8ZqQ5

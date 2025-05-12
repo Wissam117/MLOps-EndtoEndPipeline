@@ -33,3 +33,22 @@ stages:
       md5: d00d5f80cd52acae1d48fbb55c034e08
       size: 71826
       isexec: true
+  train:
+    cmd: python src/model/train.py
+    deps:
+    - path: data/WineQT.csv
+      hash: md5
+      md5: d00d5f80cd52acae1d48fbb55c034e08
+      size: 71826
+      isexec: true
+    - path: src/model/train.py
+      hash: md5
+      md5: 1c9c7f163288bf719cf1c8d1b951bba2
+      size: 3138
+      isexec: true
+    outs:
+    - path: model.keras
+      hash: md5
+      md5: 6a9dd57a8ddefae6234ac8be2cfe5078
+      size: 243556
+      isexec: true
