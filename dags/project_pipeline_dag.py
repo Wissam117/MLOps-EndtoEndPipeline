@@ -27,10 +27,11 @@ dag = DAG(
 # This is the path inside the container where your project is mounted
 project_path = '/opt/project'
 
+
 # Define tasks using BashOperator
 fetch_task = BashOperator(
     task_id='fetch_data',
-    bash_command=f'cd {project_path} && python src/fetch_data.py',
+    bash_command=f'cd {project_path} && pip install kaggle && pip install pandas && python src/fetch_data.py',
     dag=dag,
 )
 
@@ -42,27 +43,27 @@ preprocess_task = BashOperator(
 
 train_task = BashOperator(
     task_id='train_model',
-    bash_command=f'cd {project_path} && pip install tensorflow && pip install numpy && python src/model/train.py',
+    bash_command=f'cd {project_path} && pip install tensorflow && python src/model/train.py',
     dag=dag,
 )
 
-evaluate_task = BashOperator(
-    task_id='evaluate_model',
-    bash_command=f'cd {project_path} && pip install mlflow && pip install tensorflow && python src/mlflow.py',
-    dag=dag,
-)
+#evaluate_task = BashOperator(
+#    task_id='evaluate_model',
+#    bash_command=f'cd {project_path} && pip install mlflow && pip install tensorflow && python src/mlflow.py',
+#    dag=dag,
+#)
 
-dvc_version_task = BashOperator(
-    task_id='version_with_dvc',
-    bash_command=f'''
-    cd {project_path} &&
-    dvc repro &&
-    git add data/*.dvc models/*.dvc metrics.json .gitignore &&
-    git commit -m "Update data and model via Airflow" || echo "No changes to commit" &&
-    dvc push || echo "DVC push failed, check authentication"
-    ''',
-    dag=dag,
-)
+#dvc_version_task = BashOperator(
+#    task_id='version_with_dvc',
+#    bash_command=f'''
+#    cd {project_path} &&
+#    dvc repro &&
+#    git add data/*.dvc models/*.dvc metrics.json .gitignore &&
+#    git commit -m "Update data and model via Airflow" || echo "No changes to commit" &&
+#    dvc push || echo "DVC push failed, check authentication"
+#    ''',
+#    dag=dag,
+#)
 
 # Define task dependencies
-fetch_task >> preprocess_task >> train_task >> dvc_version_task
+fetch_task >> preprocess_task >> train_task #>> dvc_version_task

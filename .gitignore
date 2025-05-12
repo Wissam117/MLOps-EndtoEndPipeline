@@ -14,4 +14,15 @@ __pycache__/
 # OS files
 .DS_Store
 Thumbs.db
+
+*.json
+
+weather_env/
+plugins/
+logs/
+config/
+tf/
+model.keras
+
+
 EOF
