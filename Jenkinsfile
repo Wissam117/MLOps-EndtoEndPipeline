@@ -23,8 +23,8 @@ pipeline {
             steps {
                 sh '''
                 # (Optional) Update package lists and install python3-venv if not already installed.
-                sudo apt-get update -y
-                sudo apt-get install -y python3-venv
+                apt-get update -y
+                apt-get install -y python3-venv
 
                 # Create a virtual environment
                 python3 -m venv venv
@@ -183,7 +183,7 @@ EOF
             )
         }
         failure {
-            echo "Build failed! hehe Please check the logs for details."
+            echo "Build failed Please check the logs for details."
             emailext (
                 subject: "Pipeline Failed:ML Application Deployment",
                 body: "ML Application deployment failed. Please check Jenkins logs for details.",
