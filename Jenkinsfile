@@ -5,7 +5,7 @@ pipeline {
         // Define Docker Hub credentials ID that you've configured in Jenkins
         DOCKER_CREDENTIALS = credentials('docker-jenkins')
         // Your Docker Hub username
-        DOCKER_USERNAME = 'saadgillani7'
+        DOCKER_USERNAME = 'wissamwissam'
         // Your Docker image name
         DOCKER_IMAGE_NAME = 'ml-app'
         // Tag with build number for versioning
@@ -57,14 +57,29 @@ pipeline {
                 # Activate the virtual environment
                 . venv/bin/activate
 
+                # Create data directory if it doesn't exist
+                mkdir -p data
+                
+                # Copy the dataset
+                #cp /home/saad/Desktop/ML-CICD-pipeline/data/WineQT.csv data/ ##change
+                
                 # Train the model
                 python3 src/model/train.py
 
                 # Create deployment package
                 mkdir -p deployment
+                mkdir -p deployment/data  # Explicitly create data directory in deployment
                 cp -r src/ deployment/
-                cp model.pkl deployment/
+                cp model.keras deployment/
                 cp requirements.txt deployment/
+                cp -r data/*.csv deployment/data/  # Copy only CSV files to be explicit
+                
+                # List files for debugging
+                echo "Contents of deployment directory:"
+                ls -la deployment/
+                echo "Contents of deployment/data directory:"
+                ls -la deployment/data/
+                
                 tar -czf ml-app-v1.0.${BUILD_NUMBER}.tar.gz deployment/
                 '''
             }
@@ -83,13 +98,14 @@ WORKDIR /app
 COPY deployment/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code and model
+# Copy application code, model, and data
 COPY deployment/src/ ./src/
-COPY deployment/model.pkl .
+COPY deployment/model.keras .
+COPY deployment/data/ ./data/
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
-ENV MODEL_PATH=model.pkl
+ENV MODEL_PATH=model.keras
 
 # Expose the port the app runs on
 EXPOSE 5000
@@ -163,7 +179,7 @@ EOF
             emailext (
                 subject: "Pipeline Success: ML Application Deployment",
                 body: "ML Application has been successfully deployed.\nVersion: v1.0.${BUILD_NUMBER}\nDocker Image: docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}",
-                to: "godsu46@gmail.com"
+                to: "mwissam11@gmail.com"
             )
         }
         failure {
@@ -171,7 +187,7 @@ EOF
             emailext (
                 subject: "Pipeline Failed:ML Application Deployment",
                 body: "ML Application deployment failed. Please check Jenkins logs for details.",
-                to: "godsu46@gmail.com"
+                to: "mwissam11@gmail.com"
             )
         }
     }

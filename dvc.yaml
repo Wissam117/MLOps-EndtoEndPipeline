@@ -1,0 +1,31 @@
+       
+stages:
+  fetch:
+    cmd: python src/fetch_data.py
+    deps:
+      - src/fetch_data.py
+    outs:
+      - data/WineQT_unprocessed.csv
+  
+  preprocess:
+    cmd: python src/preprocess.py
+    deps:
+      - src/preprocess.py
+      - data/WineQT_unprocessed.csv
+    outs:
+      - data/WineQT.csv
+  
+  train:
+    cmd: python src/model/train.py
+    deps:
+      - src/model/train.py
+      - data/WineQT.csv
+    outs:
+      - model.keras
+  
+  evaluate:
+    cmd: python mlflow.py
+    deps:
+      - mlflow.py
+      - model.keras
+      - data/WineQT.csv
