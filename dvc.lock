@@ -1,0 +1,35 @@
+schema: '2.0'
+stages:
+  fetch:
+    cmd: python src/fetch_data.py
+    deps:
+    - path: src/fetch_data.py
+      hash: md5
+      md5: c81836fdc7273a25a802761197ac05b5
+      size: 1528
+      isexec: true
+    outs:
+    - path: data/WineQT_unprocessed.csv
+      hash: md5
+      md5: e2e57e4c41e6ee0213fb12e5a70f4bfb
+      size: 78057
+      isexec: true
+  preprocess:
+    cmd: python src/preprocess.py
+    deps:
+    - path: data/WineQT_unprocessed.csv
+      hash: md5
+      md5: e2e57e4c41e6ee0213fb12e5a70f4bfb
+      size: 78057
+      isexec: true
+    - path: src/preprocess.py
+      hash: md5
+      md5: be16ebf32e81929ed71ab5985b403dca
+      size: 962
+      isexec: true
+    outs:
+    - path: data/WineQT.csv
+      hash: md5
+      md5: d00d5f80cd52acae1d48fbb55c034e08
+      size: 71826
+      isexec: true
