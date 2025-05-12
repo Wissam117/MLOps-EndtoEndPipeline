@@ -23,8 +23,8 @@ pipeline {
             steps {
                 sh '''
                 # (Optional) Update package lists and install python3-venv if not already installed.
-                apt-get update -y
-                apt-get install -y python3-venv
+                sudo apt-get update -y
+                sudo apt-get install -y python3-venv
 
                 # Create a virtual environment
                 python3 -m venv venv
