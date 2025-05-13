@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 
-def load_data(data_path='C:/Users/Admin/Desktop/MLOPS_PROJECT_21i-0709_21i-1709_20i-0847/Pipelining/data/WineQT.csv'):
+def load_data(data_path='C:/Users/Admin/Desktop/MLOPS_PROJECT_21i-0709_21i-1709_20i-0847/Pipelining/data/_unprocessed.csv'):
     """Load data for training"""
     data = pd.read_csv(data_path)
     data = data.drop(['Id'], axis=1)
@@ -80,7 +80,7 @@ def train_model(data, model_path='C:/Users/Admin/Desktop/MLOPS_PROJECT_21i-0709_
 
 
 if __name__ == '__main__':
-    data_path = os.environ.get('DATA_PATH', 'C:/Users/Admin/Desktop/MLOPS_PROJECT_21i-0709_21i-1709_20i-0847/Pipelining/data/WineQT.csv')
+    data_path = os.environ.get('DATA_PATH', 'C:/Users/Admin/Desktop/MLOPS_PROJECT_21i-0709_21i-1709_20i-0847/Pipelining/data/WineQT_unprocessed.csv')
     model_path = os.environ.get('MODEL_PATH', 'C:/Users/Admin/Desktop/MLOPS_PROJECT_21i-0709_21i-1709_20i-0847/Pipelining/src/api/model.keras')
 
     data = load_data(data_path)
