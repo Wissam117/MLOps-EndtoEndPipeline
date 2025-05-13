@@ -22,8 +22,8 @@ pipeline {
         stage('Install Python Dependencies') {
     steps {
         sh '''
-        echo "2a8c0d00b75e487b958ad5c6b1cef352" | sudo -S apt-get update -y
-        echo "2a8c0d00b75e487b958ad5c6b1cef352" | sudo -S apt-get install -y python3-venv
+        sudo apt-get update -y
+        sudo apt-get install -y python3-venv
 
         # Create a virtual environment
         python3 -m venv venv
