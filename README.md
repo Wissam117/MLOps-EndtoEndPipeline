@@ -21,3 +21,8 @@ dvc repro
 dvc push
 dvc dag
 dvc pull
+
+### MLFLOW
+
+mlflow ui
+python mlflow_.py
