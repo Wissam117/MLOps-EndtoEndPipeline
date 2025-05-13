@@ -3,8 +3,8 @@ pipeline {
         docker {
             image 'python:3.9'  // Uses a Docker image with Python and root access
             args '-v /var/run/docker.sock:/var/run/docker.sock'  // Access to Docker socket for Docker commands
-                 }
         }
+    }
     
     environment {
         // Define Docker Hub credentials ID that you've configured in Jenkins
@@ -24,32 +24,29 @@ pipeline {
             }
         }
         
-        stage('Install Python Dependencies') {
+        stage('Install Dependencies') {
             steps {
                 sh '''
-                # (Optional) Update package lists and install python3-venv if not already installed.
-                sudo apt-get update -y
-                sudo apt-get install -y python3-venv
-
-                # Create a virtual environment
+                # Install Docker CLI
+                apt-get update -y
+                apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+                curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+                echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+                apt-get update -y
+                apt-get install -y docker-ce-cli
+                
+                # Install Python requirements
+                apt-get install -y python3-venv
                 python3 -m venv venv
-
-                # Activate the virtual environment
                 . venv/bin/activate
-
-                # Upgrade pip, setuptools (to version 68 or later), and wheel.
                 pip install --upgrade pip "setuptools>=68" wheel
-
-                # Install required packages from requirements.txt using binary wheels only.
                 pip install --only-binary :all: -r requirements.txt
                 '''
             }
         }
-        
         stage('Run Tests') {
             steps {
                 sh '''
-                # Activate the virtual environment and run tests
                 . venv/bin/activate
                 PYTHONPATH=. python3 -m pytest tests/
                 '''
@@ -188,9 +185,9 @@ EOF
             )
         }
         failure {
-            echo "Build failed Please check the logs for details."
+            echo "Build failed. Please check the logs for details."
             emailext (
-                subject: "Pipeline Failed:ML Application Deployment",
+                subject: "Pipeline Failed: ML Application Deployment",
                 body: "ML Application deployment failed. Please check Jenkins logs for details.",
                 to: "mwissam11@gmail.com"
             )
