@@ -2,8 +2,9 @@ pipeline {
     agent {
         docker {
             image 'python:3.9'  // Uses a Docker image with Python and root access
+            args '-v /var/run/docker.sock:/var/run/docker.sock'  // Access to Docker socket for Docker commands
                  }
-        }
+    }
     
     environment {
         // Define Docker Hub credentials ID that you've configured in Jenkins
