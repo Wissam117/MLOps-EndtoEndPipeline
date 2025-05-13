@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 
-def load_data(data_path='data/WineQT.csv'):
+def load_data(data_path='data\WineQT.csv'):
     """Load data for training"""
     data = pd.read_csv(data_path)
     data = data.drop(['Id'], axis=1)
@@ -18,7 +18,7 @@ def load_data(data_path='data/WineQT.csv'):
     return data
 
 
-def train_model(data, model_path='model.keras'):
+def train_model(data, model_path='src\api\model.keras'):
     """Train a simple ML model and save to disk"""
     # Prepare data
     train, test = train_test_split(data, test_size=0.2, random_state=1)
