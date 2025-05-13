@@ -80,8 +80,8 @@ def train_model(data, model_path='C:/Users/Admin/Desktop/MLOPS_PROJECT_21i-0709_
 
 
 if __name__ == '__main__':
-    data_path = os.environ.get('DATA_PATH', 'data/WineQT.csv')
-    model_path = os.environ.get('MODEL_PATH', 'model.keras')
+    data_path = os.environ.get('DATA_PATH', 'C:/Users/Admin/Desktop/MLOPS_PROJECT_21i-0709_21i-1709_20i-0847/Pipelining/data/WineQT.csv')
+    model_path = os.environ.get('MODEL_PATH', 'C:/Users/Admin/Desktop/MLOPS_PROJECT_21i-0709_21i-1709_20i-0847/Pipelining/src/api/model.keras')
 
     data = load_data(data_path)
     model, accuracy = train_model(data, model_path)
