@@ -21,12 +21,5 @@ stages:
       - src/model/train.py
       - data/WineQT.csv
     outs:
-      - model.keras
-# 
-#  evaluate:
-#    cmd: python mlflow_.py
-#    deps:
-#      - mlflow.py
-#      - model.keras
-#      - data/WineQT.csv
+      - src/api/model.keras
   
