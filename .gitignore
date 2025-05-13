@@ -18,7 +18,7 @@ myenv/
 *.json
 mlruns/
 mlartifacts/
-data/
+
 weather_env/
 plugins/
 logs/
