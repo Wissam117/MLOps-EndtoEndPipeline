@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 
-def load_data(data_path='C:/Users/Admin/Desktop/MLOPS_PROJECT_21i-0709_21i-1709_20i-0847/Pipelining/data/_unprocessed.csv'):
+def load_data(data_path='/mnt/wsl/docker-desktop-bind-mounts/Ubuntu-24.04/6935704a4c8f6743da625de2280f3a9d1ae4b3666a028c3550888958bd31df6f/data/_unprocessed.csv'):
     """Load data for training"""
     data = pd.read_csv(data_path)
     data = data.drop(['Id'], axis=1)
@@ -18,7 +18,7 @@ def load_data(data_path='C:/Users/Admin/Desktop/MLOPS_PROJECT_21i-0709_21i-1709_
     return data
 
 
-def train_model(data, model_path='C:/Users/Admin/Desktop/MLOPS_PROJECT_21i-0709_21i-1709_20i-0847/Pipelining/src/api/model.keras'):
+def train_model(data, model_path='/mnt/wsl/docker-desktop-bind-mounts/Ubuntu-24.04/6935704a4c8f6743da625de2280f3a9d1ae4b3666a028c3550888958bd31df6f/src/api/model.keras'):
     """Train a simple ML model and save to disk"""
     # Prepare data
     train, test = train_test_split(data, test_size=0.2, random_state=1)
@@ -80,8 +80,8 @@ def train_model(data, model_path='C:/Users/Admin/Desktop/MLOPS_PROJECT_21i-0709_
 
 
 if __name__ == '__main__':
-    data_path = os.environ.get('DATA_PATH', 'C:/Users/Admin/Desktop/MLOPS_PROJECT_21i-0709_21i-1709_20i-0847/Pipelining/data/WineQT_unprocessed.csv')
-    model_path = os.environ.get('MODEL_PATH', 'C:/Users/Admin/Desktop/MLOPS_PROJECT_21i-0709_21i-1709_20i-0847/Pipelining/src/api/model.keras')
+    data_path = os.environ.get('DATA_PATH', '/mnt/wsl/docker-desktop-bind-mounts/Ubuntu-24.04/6935704a4c8f6743da625de2280f3a9d1ae4b3666a028c3550888958bd31df6f/data/WineQT_unprocessed.csv')
+    model_path = os.environ.get('MODEL_PATH', '/mnt/wsl/docker-desktop-bind-mounts/Ubuntu-24.04/6935704a4c8f6743da625de2280f3a9d1ae4b3666a028c3550888958bd31df6f/src/api/model.keras')
 
     data = load_data(data_path)
     model, accuracy = train_model(data, model_path)
