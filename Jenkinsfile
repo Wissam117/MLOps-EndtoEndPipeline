@@ -58,9 +58,7 @@ pipeline {
 
                 # Create data directory if it doesn't exist
                 mkdir -p data
-                
-                # Copy the dataset
-                #cp /home/saad/Desktop/ML-CICD-pipeline/data/WineQT_unprocessed.csv data/ ##change
+
                 
                 # Train the model
                 python3 src/model/train.py
