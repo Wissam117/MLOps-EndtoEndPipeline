@@ -20,26 +20,25 @@ pipeline {
         }
         
         stage('Install Python Dependencies') {
-            steps {
-                sh '''
-                # (Optional) Update package lists and install python3-venv if not already installed.
-                sudo apt-get update -y
-                sudo apt-get install -y python3-venv
+    steps {
+        sh '''
+        echo "a" | sudo -S apt-get update -y
+        echo "a" | sudo -S apt-get install -y python3-venv
 
-                # Create a virtual environment
-                python3 -m venv venv
+        # Create a virtual environment
+        python3 -m venv venv
 
-                # Activate the virtual environment
-                . venv/bin/activate
+        # Activate the virtual environment
+        . venv/bin/activate
 
-                # Upgrade pip, setuptools (to version 68 or later), and wheel.
-                pip install --upgrade pip "setuptools>=68" wheel
+        # Upgrade pip, setuptools (to version 68 or later), and wheel
+        pip install --upgrade pip "setuptools>=68" wheel
 
-                # Install required packages from requirements.txt using binary wheels only.
-                pip install --only-binary :all: -r requirements.txt
-                '''
-            }
+        # Install required packages from requirements.txt using binary wheels only
+        pip install --only-binary :all: -r requirements.txt
+        '''
         }
+    }
         
         stage('Run Tests') {
             steps {

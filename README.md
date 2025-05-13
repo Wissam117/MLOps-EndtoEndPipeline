@@ -8,7 +8,8 @@ docker run -d -p 8070:8080 -p 50000:50000 jenkins/jenkins:lts
 docker compose up -d
 
 ### dvc 
-
+make gdrive service account
+connect gdrive public folder with it
 git init
 dvc remote list
 dvc remote remove myremote
