@@ -1,7 +1,13 @@
-# ML-CICD-pipeline
-Basic ML CI/CD Pipeline implementation
+# MLOps - End to End Pipeline
+Total ML CI/CD Pipeline implementation
 
-## jenkins
+## description:
+A Machine Learning project with full end to end implementation of a
+ ML Orchestration pipeline, version control for data and models using
+ Jenkins, MLFlow, Airflow, DVC and Github Actions.
+
+## How to Run:
+### jenkins
 docker run -d -p 8070:8080 -p 50000:50000 jenkins/jenkins:lts
 
 ### airflow
