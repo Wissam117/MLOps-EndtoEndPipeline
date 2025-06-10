@@ -18,14 +18,10 @@ A Machine Learning project with full end to end implementation of a
 - connect gdrive public folder with it
 - git init
 - dvc remote list
-- dvc remote remove myremote
-- dvc remote list
-- dvc remote add -d gdrive_remote gdrive://1qIvgWtt3ZJ0cLFO9TTa5Iq0QCP0wQzjV
+- dvc remote add -d gdrive_remote gdrive://link_to_folder
 - dvc remote modify gdrive_remote gdrive_use_service_account true
-- dvc remote modify gdrive_remote gdrive_service_account_json_file_path src/dvc.json
-- dvc push
-- dvc repro
-- dvc push
+- dvc remote modify gdrive_remote gdrive_service_account_json_file_path src/dvc.json // api key for dvc generated
+- dvc repro  // or dvc push
 - dvc dag
 - dvc pull
 
@@ -33,4 +29,4 @@ A Machine Learning project with full end to end implementation of a
 - mlflow ui
 - python mlflow_.py
 
-*Merge a Pull Request to Start the Action*
+*Merge a Pull Request to Start the whole pipeline*
