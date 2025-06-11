@@ -173,7 +173,7 @@ EOF
         success {
             echo "Build successful! ML application deployed to /var/lib/jenkins/deployed-apps/ml-app-v1.0.${BUILD_NUMBER}"
             echo "Docker image pushed to Docker Hub: docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
-            emailext (
+            emailtext (
                 subject: "Pipeline Success: ML Application Deployment",
                 body: "ML Application has been successfully deployed.\nVersion: v1.0.${BUILD_NUMBER}\nDocker Image: docker.io/${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}",
                 to: "mwissam11@gmail.com"
@@ -181,7 +181,7 @@ EOF
         }
         failure {
             echo "Build failed Please check the logs for details."
-            emailext (
+            emailtext (
                 subject: "Pipeline Failed:ML Application Deployment",
                 body: "ML Application deployment failed. Please check Jenkins logs for details.",
                 to: "mwissam11@gmail.com"

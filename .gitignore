@@ -26,6 +26,9 @@ config/
 tf/
 dvc/
 model.keras
+compose.yaml
+Dockerfile-b
+Dockerfile-fr
 
 
 EOF
